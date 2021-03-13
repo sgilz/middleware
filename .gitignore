@@ -21,3 +21,15 @@ Homestead.yaml
 Homestead.json
 /.vagrant
 .phpunit.result.cache
+
+
+# SOSAAAAAAAAAAAAA
+# ====== OS X ===========================================
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ====== JETBRAINS IDEs ===========================================
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
+## Directory-based project format
+.idea/
