@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Models\User;
 use App\Models\Message;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class Queue extends Model
 {
@@ -54,5 +56,12 @@ class Queue extends Model
     public function messages()
     {
         return $this->hasMany(Message::class);
+    }
+
+    public static function validate(Request $request)
+    {
+        return Validator::make($request->all(), [
+            'name' => 'required|string|alpha_dash|max:50|unique:queues',
+        ]);
     }
 }

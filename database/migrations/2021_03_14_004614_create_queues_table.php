@@ -20,7 +20,7 @@ class CreateQueuesTable extends Migration
                 ->references("id")->on("users")
                 ->onUpdate("cascade")
                 ->onDelete("cascade");
-            $table->string("name", 15)->unique();
+            $table->string("name", 50)->unique();
             $table->timestamps();
         });
     }
