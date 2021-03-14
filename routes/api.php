@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 //user defined
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\QueueController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,4 +24,5 @@ use App\Http\Controllers\AuthController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/user-info', [AuthController::class, 'userInfo'])->middleware('auth:sanctum');
+Route::get('/user-info', [AuthController::class, 'userInfo'])->middleware('auth:sanctum');
+Route::post('/login', [QueueController::class, 'push']);
