@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class User extends Authenticatable
 {
@@ -46,10 +47,11 @@ class User extends Authenticatable
     public static function validateRegister(Request $request) 
     {
         //validating field from the request
-        return $request->validate([
+        return Validator::make(
+            $request->all(), [
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:8',
-            ]);
+        ]);
     }
 }
