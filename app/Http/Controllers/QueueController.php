@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Message;
 use App\Models\Queue;
 use Illuminate\Http\Request;
 
@@ -9,7 +10,33 @@ class QueueController extends Controller
 {
     public function push(Request $request)
     {
-        
+        //checks field correctness
+        if(! ($request->filled("queue") &&
+             $request->filled("body"))){
+            return response()->json([
+                "message" => "Invalid data",
+                "errors" => ["Fields 'queue' and 'body' are mandatory"],
+            ],400);
+        }
+
+        $queue = Queue::where("name",$request["queue"])->first();
+        if($queue){
+            Message::create([
+                "body" => $request["body"],
+                "date" => date('Y-m-d H:i:s'),
+                "sent" => false,
+                "queue_id" => $queue->getId(),
+            ]);
+            return response()->json([
+                "message" => "Message pushed to '{$queue->getName()}' successfully",
+            ], 201);
+        }else{
+            return response()->json([
+                "message" => "Not found",
+                "errors" => ["There is not queue with this name"],
+            ],404);
+        }
+
     }
 
     public function pull(Request $request)
@@ -51,16 +78,14 @@ class QueueController extends Controller
     public function delete(Request $request)
     {
         //checks field correctness
-        $validator = Queue::validate($request);
-        if($validator->fails()){
+        if(!$request->filled("name")){
             return response()->json([
                 "message" => "Invalid data",
-                "errors" => $validator->errors()->all(),
+                "errors" => ["Queue name not provided"],
             ],400);
         }
 
-        $validatedData = $validator->validated();
-        $queue = Queue::where("name",$validatedData["name"]);
+        $queue = Queue::where("name",$request->name);
         if($queue->exists()){
             $queue->delete();
             return response()->json([

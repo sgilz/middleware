@@ -17,7 +17,7 @@ class CreateMessagesTable extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->longText("body");
+            $table->text("body")->nullable(false);
             $table->dateTime("date");
             $table->boolean("sent")->nullable(false);
             $table->foreignId("queue_id")

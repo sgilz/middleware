@@ -13,6 +13,7 @@ class Message extends Model
         'body',
         'date',
         'sent',
+        'queue_id',
     ];
 
     public function getId()
