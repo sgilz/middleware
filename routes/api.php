@@ -26,7 +26,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/queue/create', [QueueController::class, 'create'])->middleware('auth:sanctum');
 Route::delete('/queue/delete', [QueueController::class, 'delete'])->middleware('auth:sanctum');
+Route::get('/queue/list', [QueueController::class, 'list'])->middleware('auth:sanctum');
 Route::get('/queue/pull', [QueueController::class, 'pull'])->middleware('auth:sanctum');
-Route::post('/queue/push', [QueueController::class, 'push'])->middleware('auth:sanctum');
+Route::put('/queue/push', [QueueController::class, 'push'])->middleware('auth:sanctum');
 Route::get('/user-info', [AuthController::class, 'userInfo'])->middleware('auth:sanctum');
 
