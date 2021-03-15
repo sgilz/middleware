@@ -62,7 +62,7 @@ class Queue extends Model
     public static function validate(Request $request)
     {
         return Validator::make($request->all(), [
-            'name' => 'required|string|alpha_dash|max:50|unique:queues',
+            'name' => 'required|string|alpha_dash|max:50',
         ]);
     }
 }
