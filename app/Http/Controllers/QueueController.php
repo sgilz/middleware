@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Queue;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class QueueController extends Controller
 {
@@ -31,12 +30,12 @@ class QueueController extends Controller
         $validatedData = $validator->validated();
         $queue = Queue::create([
             "name" => $validatedData["name"],
-            "user_id" => Auth::id(),
+            "user_id" => $request->user()->getId(),
         ]);
         return response()->json([
-            "message" => "queue '{$queue->getName()}' created successfully",
+            "message" => "Queue created successfully",
             "data" => $queue,
-        ]);
+        ],201);
     }
 
     public function delete(Request $request)

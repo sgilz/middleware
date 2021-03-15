@@ -20,13 +20,12 @@ class CreateMessagesTable extends Migration
             $table->longText("body");
             $table->dateTime("date");
             $table->boolean("sent")->nullable(false);
-            $table->bigInteger("queue_id")->nullable();
-            $table->timestamps();
-
-            $table->foreign("queue_id")
+            $table->foreignId("queue_id")
+                ->nullable()
                 ->references("id")->on("queues")
                 ->onUpdate("cascade")
                 ->onDelete("cascade");
+            $table->timestamps();
         });
     }
 

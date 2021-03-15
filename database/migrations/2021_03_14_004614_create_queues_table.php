@@ -15,8 +15,8 @@ class CreateQueuesTable extends Migration
     {
         Schema::create('queues', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id')->unsigned();
-            $table->foreign("user_id")
+            $table->foreignId("user_id")
+                ->nullable(false)
                 ->references("id")->on("users")
                 ->onUpdate("cascade")
                 ->onDelete("cascade");
