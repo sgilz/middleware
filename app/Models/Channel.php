@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Model;
 class Channel extends Model
 {
     protected $fillable = [
+        'id',
         'name',
-        'channel_id',
         'user_id'
     ];
 
@@ -47,6 +47,6 @@ class Channel extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)->withTimestamps();
     }
 }
