@@ -13,9 +13,16 @@ class AuthController extends Controller
     public function register(Request $request)
     {   
         //Asks User class for validating input data
-        $validatedData = User::validateRegister($request);
+        $validator = User::validateRegister($request);
+        if ($validator->fails()){
+            return response()->json([
+                "message" => "Invalid data",
+                "errors" => $validator->errors()->all(),
+            ],400);
+        }
 
-        //creating a user sdirectly saved to DB
+        //creating a user directly saved to DB
+        $validatedData = $validator->validated();
         $user = User::create([
                 'name' => $validatedData['name'],
                 'email' => $validatedData['email'],
