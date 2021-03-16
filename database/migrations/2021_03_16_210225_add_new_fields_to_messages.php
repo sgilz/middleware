@@ -16,7 +16,7 @@ class AddNewFieldsToMessages extends Migration
         Schema::table('messages', function (Blueprint $table) {
             $table->foreignId("channel_id")
                 ->nullable()
-                ->references("id")->on("channel")
+                ->references("id")->on("channels")
                 ->onUpdate("cascade")
                 ->onDelete("cascade");
         });
