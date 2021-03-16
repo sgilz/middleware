@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateChannelTable extends Migration
+class AddNewFieldsToMessages extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,12 @@ class CreateChannelTable extends Migration
      */
     public function up()
     {
-        Schema::create('channel', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId("user_id")
-                ->nullable(false)
-                ->references("id")->on("users")
+        Schema::table('messages', function (Blueprint $table) {
+            $table->foreignId("channel_id")
+                ->nullable()
+                ->references("id")->on("channel")
                 ->onUpdate("cascade")
                 ->onDelete("cascade");
-            $table->string("name", 50)->unique();
-            $table->timestamps();
-            $table->timestamps();
         });
     }
 
@@ -33,6 +29,8 @@ class CreateChannelTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('channel');
+        Schema::table('messages', function (Blueprint $table) {
+            //
+        });
     }
 }
