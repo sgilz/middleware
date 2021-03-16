@@ -22,6 +22,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'ip',
+        'port',
+        'is_admin'
     ];
 
     /**
@@ -43,6 +46,31 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function getIp()
+    {
+        return $this->attributes['ip'];
+    }
+
+    public function setIp($ip)
+    {
+        $this->attributes['ip'] = $ip;
+    }
+
+    public function getPort()
+    {
+        return $this->attributes['ip'];
+    }
+
+    public function setPort($port)
+    {
+        $this->attributes['port'] = $port;
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(Channel::class);
+    }
+    
     public static function validateRegister(Request $request) 
     {
         //validating field from the request
