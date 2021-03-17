@@ -14,6 +14,7 @@ class Message extends Model
         'date',
         'sent',
         'queue_id',
+        'channel_id'
     ];
 
     public function getId()
@@ -64,6 +65,16 @@ class Message extends Model
     public function setQueueId($queue_id)
     {
         $this->attributes['queue_id'] = $queue_id;
+    }
+
+    public function getChannelId()
+    {
+        return $this->attributes['channel_id'];
+    }
+
+    public function setChannelId($channel_id)
+    {
+        $this->attributes['channel_id'] = $channel_id;
     }
 
     public function queue()
