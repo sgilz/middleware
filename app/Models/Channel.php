@@ -18,12 +18,12 @@ class Channel extends Model
 
     public function getId()
     {
-        return $this->attributes['channel_id'];
+        return $this->attributes['id'];
     }
 
-    public function setId($channel_id)
+    public function setId($id)
     {
-        $this->attributes['channel_id'] = $channel_id;
+        $this->attributes['id'] = $id;
     }
 
     public function getName()
