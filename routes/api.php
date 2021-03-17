@@ -38,5 +38,6 @@ Route::post('/channel/create', [ChannelController::class, 'create'])->middleware
 Route::delete('/channel/delete', [ChannelController::class, 'delete'])->middleware('auth:sanctum');
 Route::get('/channel/list', [ChannelController::class, 'list'])->middleware('auth:sanctum');
 Route::post('/channel/subscribe', [ChannelController::class, 'subscribe'])->middleware('auth:sanctum');
+Route::post('/channel/push', [ChannelController::class, 'push'])->middleware('auth:sanctum');
 Route::get('/user-info', [AuthController::class, 'userInfo'])->middleware('auth:sanctum');
 
