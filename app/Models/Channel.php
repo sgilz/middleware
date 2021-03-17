@@ -6,7 +6,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 class Channel extends Model
 {
     protected $fillable = [
@@ -48,5 +49,12 @@ class Channel extends Model
     public function users()
     {
         return $this->belongsToMany(User::class)->withTimestamps();
+    }
+
+    public static function validate(Request $request)
+    {
+        return Validator::make($request->all(), [
+            'name' => 'required|string|alpha_dash|max:50',
+        ]);
     }
 }

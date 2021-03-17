@@ -14,8 +14,8 @@ class AddNewFieldsToUsers extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('ip');
-            $table->integer('port');
+            $table->integer('ip') ->nullable();
+            $table->integer('port') ->nullable();
         });
     }
 
