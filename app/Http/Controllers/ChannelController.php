@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Channel;
+use App\Models\User;
+use App\Models\ChannelsUsers;
 use App\Http\Resources\ChannelResource;
 
 class ChannelController extends Controller
@@ -70,9 +72,8 @@ class ChannelController extends Controller
         ]);
     }
 
-    public function suscribe(Request $request)
+    public function subscribe(Request $request)
     {
-        //checks field correctness
         if (!$request->filled("name")) {
             return response()->json([
                 "message" => "Invalid data",
@@ -81,9 +82,39 @@ class ChannelController extends Controller
         }
 
         $channel = Channel::where("name", $request["name"])->first();
+        $user = $request->user();
 
-        if($channel){
-           
+        if ($channel) {
+            $validator = User::validateSuscription($request);
+            if ($validator->fails()) {
+                return response()->json([
+                    "message" => "Invalid data",
+                    "errors" => $validator->errors()->all(),
+                ], 400);
+            }
+            if (ChannelsUsers::where("id", $user->getId())->exists()) {
+                return response()->json([
+                    "message" => "You have already subscribed to ". $request["name"],
+                ], 400);
+            } 
+            else {
+
+                $user->setIp($request["ip"]);
+                $user->setPort($request["port"]);
+                $user->save();
+
+                $channelsUsers = ChannelsUsers::create(
+                    [
+                        "channel_id" => $channel->getId(),
+                        "user_id" => $user->getId(),
+                    ]
+                );
+
+                return response()->json([
+                    "message" => "Subscription to " . $request["name"] . " successfully",
+                    "data" => $channelsUsers,
+                ], 201);
+            }
         }
     }
 }

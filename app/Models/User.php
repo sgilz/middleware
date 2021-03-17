@@ -127,4 +127,13 @@ class User extends Authenticatable
                 'password' => 'required|string|min:8',
         ]);
     }
+
+    public static function validateSuscription(Request $request)
+    {
+        return Validator::make(
+            $request->all(), [
+                'port' => 'integer|between:1024,65536',
+                'ip' => 'string|regex:/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/'
+        ]);   
+    }
 }
