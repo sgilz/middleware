@@ -35,7 +35,7 @@ class ChannelsUsers extends Model
         return $this->attributes['channel_id'];
     }
 
-    public function setWishListId($channelId)
+    public function setChannelId($channelId)
     {
         $this->attributes['channel_id'] = $channelId;
     }
