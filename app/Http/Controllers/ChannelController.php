@@ -93,12 +93,16 @@ class ChannelController extends Controller
                     "errors" => $validator->errors()->all(),
                 ], 400);
             }
-            if (ChannelsUsers::where("id", $user->getId())->exists()) {
+
+            $suscribed = ChannelsUsers::where("user_id", $user->getId())
+                ->where("channel_id", $channel->getId())
+                ->exists();
+
+            if ($suscribed) {
                 return response()->json([
-                    "message" => "You have already subscribed to ". $request["name"],
+                    "message" => "You have already subscribed to " . $request["name"],
                 ], 400);
-            } 
-            else {
+            } else {
 
                 $user->setIp($request["ip"]);
                 $user->setPort($request["port"]);
@@ -122,18 +126,18 @@ class ChannelController extends Controller
     public function push(Request $request)
     {
         //checks field correctness
-        if(! ($request->filled("channel") &&
-             $request->filled("body"))){
+        if (!($request->filled("channel") &&
+            $request->filled("body"))) {
             return response()->json([
                 "message" => "Invalid data",
                 "errors" => ["Fields 'channel' and 'body' are mandatory"],
-            ],400);
+            ], 400);
         }
-        
+
         //checks if the queue exists
-        $channel = Channel::where("name",$request["channel"])->first();
+        $channel = Channel::where("name", $request["channel"])->first();
         echo $channel->getId();
-        if($channel){
+        if ($channel) {
             //creates a new message and saves it to DB
             Message::create([
                 "body" => $request["body"],
@@ -142,14 +146,58 @@ class ChannelController extends Controller
                 "channel_id" => $channel->getId(),
             ]);
             return response()->json([
-                "message" => "Message pushed to " . $channel->getName() . "successfully",
+                "message" => "Message pushed to " . $channel->getName() . " successfully",
             ], 201);
-        }else{
+        } else {
             return response()->json([
                 "message" => "Not found",
                 "errors" => ["There is not channel with this name"],
-            ],404);
+            ], 404);
+        }
+    }
+
+    public function pull(Request $request)
+    {
+        //checks field correctness
+        if (!$request->filled("channel")) {
+            return response()->json([
+                "message" => "Invalid data",
+                "errors" => ["Channel name not provided"],
+            ], 400);
         }
 
+        $channel = Channel::where("name", $request["channel"])->first();
+        $user = $request->user();
+
+        if ($channel) {
+
+            $suscribed = ChannelsUsers::where("user_id", $user->getId())
+                ->where("channel_id", $channel->getId())
+                ->exists();
+
+            if (!$suscribed) {
+                return response()->json([
+                    "message" => "You have not suscribed to " . $request["channel"]. " yet",
+                ], 400);
+            } else {
+                $unsent_messages = Message::where("channel_id", $channel->getId())
+                    ->where("sent", false)
+                    ->get();
+
+                //updates sent status for each message
+                foreach ($unsent_messages as $msg) {
+                    $msg->setSent(true);
+                    $msg->save();
+                }
+                return response()->json([
+                    "messages" => ChannelResource::collection($unsent_messages),
+                ]);
+            }
+        } else {
+            return response()->json([
+                "message" => "Not found",
+                "errors" => ["There is not channel with this name"],
+            ], 404);
+        }
     }
 }
