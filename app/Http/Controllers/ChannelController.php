@@ -159,17 +159,25 @@ class ChannelController extends Controller
 
     public function getMessages(Request $request)
     {
-    
+
         $user = $request->user();
         $channelsSuscribed = ChannelsUsers::where("user_id", $user->getId())->get();
         $channelMessages = array();
         foreach ($channelsSuscribed as $chs) {
-            $messages = Message::where("channel_id", $chs->getChannelId())->get();
-            $channel = Channel::where("id",  $chs->getChannelId())->first();
-            if (!$messages->isEmpty()) {
-                $channelMessages[$channel->getName()] = $messages;
+    
+            $unsent_messages = Message::where("channel_id", $chs->getChannelId())
+                ->where("sent", false)
+                ->get();
+            foreach ($unsent_messages as $msg) {
+                $msg->setSent(true);
+                $msg->save();
             }
-            else{
+
+            $channel = Channel::where("id",  $chs->getChannelId())->first();
+            
+            if (!$unsent_messages->isEmpty()) {
+                $channelMessages[$channel->getName()] = MessageResource::collection($unsent_messages);
+            } else {
                 $channelMessages[$channel->getName()] = "This channel has not messages yet";
             }
         }
