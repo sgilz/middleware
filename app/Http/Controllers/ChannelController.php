@@ -159,6 +159,7 @@ class ChannelController extends Controller
 
     public function getMessages(Request $request)
     {
+    
         $user = $request->user();
         $channelsSuscribed = ChannelsUsers::where("user_id", $user->getId())->get();
         $channelMessages = array();
