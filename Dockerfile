@@ -1,4 +1,4 @@
-FROM php:7.4-apache-stretch
+FROM php:7.2-apache-stretch
 RUN apt-get update -y && apt-get install -y openssl zip unzip git zlib1g-dev libicu-dev libpng-dev g++
 RUN docker-php-ext-configure intl
 RUN docker-php-ext-install intl
