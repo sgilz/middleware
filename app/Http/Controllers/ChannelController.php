@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\ChannelsUsers;
 use App\Http\Resources\ChannelResource;
 use App\Models\Message;
+use App\Http\Resources\MessageResource;
 
 class ChannelController extends Controller
 {
@@ -156,48 +157,24 @@ class ChannelController extends Controller
         }
     }
 
-    public function pull(Request $request)
+    public function getMessages(Request $request)
     {
-        //checks field correctness
-        if (!$request->filled("channel")) {
-            return response()->json([
-                "message" => "Invalid data",
-                "errors" => ["Channel name not provided"],
-            ], 400);
-        }
-
-        $channel = Channel::where("name", $request["channel"])->first();
+    
         $user = $request->user();
-
-        if ($channel) {
-
-            $suscribed = ChannelsUsers::where("user_id", $user->getId())
-                ->where("channel_id", $channel->getId())
-                ->exists();
-
-            if (!$suscribed) {
-                return response()->json([
-                    "message" => "You have not suscribed to " . $request["channel"]. " yet",
-                ], 400);
-            } else {
-                $unsent_messages = Message::where("channel_id", $channel->getId())
-                    ->where("sent", false)
-                    ->get();
-
-                //updates sent status for each message
-                foreach ($unsent_messages as $msg) {
-                    $msg->setSent(true);
-                    $msg->save();
-                }
-                return response()->json([
-                    "messages" => ChannelResource::collection($unsent_messages),
-                ]);
+        $channelsSuscribed = ChannelsUsers::where("user_id", $user->getId())->get();
+        $channelMessages = array();
+        foreach ($channelsSuscribed as $chs) {
+            $messages = Message::where("channel_id", $chs->getChannelId())->get();
+            $channel = Channel::where("id",  $chs->getChannelId())->first();
+            if (!$messages->isEmpty()) {
+                $channelMessages[$channel->getName()] = $messages;
             }
-        } else {
-            return response()->json([
-                "message" => "Not found",
-                "errors" => ["There is not channel with this name"],
-            ], 404);
+            else{
+                $channelMessages[$channel->getName()] = "This channel has not messages yet";
+            }
         }
+        return response()->json([
+            "messages" => $channelMessages
+        ]);
     }
 }
