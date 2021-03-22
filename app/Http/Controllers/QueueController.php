@@ -14,20 +14,20 @@ class QueueController extends Controller
     {
         //checks field correctness
         $validator = Queue::validate($request);
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json([
                 "message" => "Invalid data",
                 "errors" => $validator->errors()->all(),
-            ],400);
+            ], 400);
         }
         $validatedData = $validator->validated();
 
         //checks if the name is already assigned to another queue
-        if(Queue::where("name",$validatedData["name"])->exists()){
+        if (Queue::where("name", $validatedData["name"])->exists()) {
             return response()->json([
                 "message" => "Invalid data",
                 "errors" => ["The name has already been taken"],
-            ],409);
+            ], 409);
         }
 
         //creates the new queue and saves it to DB
@@ -38,30 +38,33 @@ class QueueController extends Controller
         return response()->json([
             "message" => "Queue created successfully",
             "data" => $queue,
-        ],201);
+        ], 201);
     }
 
     public function delete(Request $request)
     {
         //checks field correctness
-        if(!$request->filled("name")){
+        if (!$request->filled("name")) {
             return response()->json([
                 "message" => "Invalid data",
                 "errors" => ["Queue name not provided"],
-            ],400);
+            ], 400);
         }
 
-        $queue = Queue::where("name",$request["name"])->first();
-        if($queue){
+        $queue = Queue::where("name", $request["name"])
+            ->where("user_id", $request->user()->getId())
+            ->first();
+
+        if ($queue) {
             $queue->delete();
             return response()->json([
                 "message" => "Queue deleted successfully",
             ]);
-        }else{
+        } else {
             return response()->json([
                 "message" => "Not found",
-                "errors" => ["There is not queue with this name"],
-            ],404);
+                "errors" => ["There is not queue with this name in your ownership"],
+            ], 404);
         }
     }
 
@@ -75,17 +78,17 @@ class QueueController extends Controller
     public function push(Request $request)
     {
         //checks field correctness
-        if(! ($request->filled("queue") &&
-             $request->filled("body"))){
+        if (!($request->filled("queue") &&
+            $request->filled("body"))) {
             return response()->json([
                 "message" => "Invalid data",
                 "errors" => ["Fields 'queue' and 'body' are mandatory"],
-            ],400);
+            ], 400);
         }
-        
+
         //checks if the queue exists
-        $queue = Queue::where("name",$request["queue"])->first();
-        if($queue){
+        $queue = Queue::where("name", $request["queue"])->first();
+        if ($queue) {
             //creates a new message and saves it to DB
             Message::create([
                 "body" => $request["body"],
@@ -96,11 +99,11 @@ class QueueController extends Controller
             return response()->json([
                 "message" => "Message pushed to '{$queue->getName()}' successfully",
             ], 201);
-        }else{
+        } else {
             return response()->json([
                 "message" => "Not found",
                 "errors" => ["There is not queue with this name"],
-            ],404);
+            ], 404);
         }
 
     }
@@ -108,34 +111,34 @@ class QueueController extends Controller
     public function pull(Request $request)
     {
         //checks field correctness
-        if(!$request->filled("queue")){
+        if (!$request->filled("queue")) {
             return response()->json([
                 "message" => "Invalid data",
                 "errors" => ["Queue name not provided"],
-            ],400);
+            ], 400);
         }
 
         //checks if the queue exists
-        $queue = Queue::where("name",$request["queue"])->first();
-        if($queue){
+        $queue = Queue::where("name", $request["queue"])->first();
+        if ($queue) {
             //gets unsent messages from this queue
             $unsent_messages = Message::where("queue_id", $queue->getId())
-                                        ->where("sent", false)
-                                        ->get();
-            
+                ->where("sent", false)
+                ->get();
+
             //updates sent status for each message
-            foreach($unsent_messages as $msg){
+            foreach ($unsent_messages as $msg) {
                 $msg->setSent(true);
                 $msg->save();
             }
             return response()->json([
                 "messages" => MessageResource::collection($unsent_messages),
             ]);
-        }else{
+        } else {
             return response()->json([
                 "message" => "Not found",
                 "errors" => ["There is not queue with this name"],
-            ],404);
+            ], 404);
         }
     }
 }
