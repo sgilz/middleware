@@ -1,4 +1,4 @@
-# PDF documenation link:
+# PDF documentation link:
 https://drive.google.com/file/d/1ICdmFydc1MMuO3MgiRprRht-N4YenNhJ/view?usp=sharing
 
 # SERVER IP (MOM)
